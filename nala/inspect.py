@@ -641,6 +641,16 @@ class ForgivingDeclarationParser:
 
         code = self.read_source_code(begin, self.previous.span[1]) + ';'
 
+        # PATCH BEGIN
+        # If a programmer wants to do compile time NULL pointer checks on init structs
+        # the C static array notation can do this.
+        # A function of style `foo(my_struct * bar)` can be changed to the array notation
+        # of `foo(my_struct bar[static 1])` and the compiler will complain if a NULL pointer
+        # is provided at compile time!
+        # Sadly Nala will run into problems with this notation, especially if the struct
+        # contains enumeration elements. Due to the static array notation Nala creates
+        # copies of the embedded enumerations in the generated mocks, which results in
+        # multiple declaration of enmerator values, which can not be handled in C (C99).
         if self.static1_as_pointer:
             STATIC1 = r"[static 1]"
             if STATIC1 in code:
@@ -648,6 +658,7 @@ class ForgivingDeclarationParser:
                 ppos = code.rfind(" ", 0, apos)
                 code_mod = f"{code[:ppos]} *{code[ppos:]}".replace(STATIC1, "")
                 return func_name, code_mod
+        # PATCH END
 
         return func_name, code
 
