@@ -171,6 +171,16 @@ RE_TOKEN = re.compile(
     '|'.join(f'(?P<{token}>{pattern})' for token, pattern in TOKENS.items()),
     flags=re.MULTILINE)
 
+STATIC_1 = re.compile(r"(\[\s*static 1\s*\])")
+
+def is_static_1_pointer(code):
+    match = re.search(STATIC_1, code)
+    if match:
+        apos, epos = match.span()
+        ppos = code.rfind(" ", 0, apos)
+        return (True, f"{code[:ppos]} *{code[ppos:apos]}{code[epos:]}")
+    return (False, code)
+
 
 class PrimitiveType(NamedTuple):
 
@@ -652,11 +662,14 @@ class ForgivingDeclarationParser:
         # copies of the embedded enumerations in the generated mocks, which results in
         # multiple declaration of enmerator values, which can not be handled in C (C99).
         if self.static1_as_pointer:
-            STATIC1 = r"[static 1]"
-            if STATIC1 in code:
-                apos = code.find(STATIC1)
-                ppos = code.rfind(" ", 0, apos)
-                code_mod = f"{code[:ppos]} *{code[ppos:]}".replace(STATIC1, "")
+            found = False
+            re_match = True
+            code_mod = code
+            while re_match:
+                re_match, code_mod = is_static_1_pointer(code_mod)
+                if re_match:
+                    found = True
+            if found:
                 return func_name, code_mod
         # PATCH END
 
