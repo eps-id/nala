@@ -47,7 +47,8 @@ def do_generate_mocks(args):
                    real_variadic_functions_file,
                    not args.no_cache,
                    args.implementation,
-                   args.no_implementation)
+                   args.no_implementation,
+                   args.static1_as_pointer)
 
 
 def do_wrap_internal_symbols(args):
@@ -128,6 +129,11 @@ def main():
     subparser.add_argument('-c', '--no-cache',
                            action='store_true',
                            help='Do not use caching to speed up the generation.')
+    subparser.add_argument('-s', '--static1-as-pointer',
+                           action='store_true',
+                           help='Convert function parameters of pointer to struct '
+                                'given in array notation `foo(my_struct bar[static 1])` '
+                                'to pointer notation `foo(my_struct * bar)` for mocking.')
     subparser.add_argument('-i', '--implementation',
                            action='append',
                            default=[],

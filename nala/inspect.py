@@ -295,7 +295,7 @@ def is_char_pointer(type_):
 
 class ForgivingDeclarationParser:
 
-    def __init__(self, source_code, functions, rename_parameters_file=None):
+    def __init__(self, source_code, functions, rename_parameters_file=None, static1_as_pointer=False):
         self.source_code = source_code
         self.functions = functions
         self.token_stream = self.tokenize(source_code)
@@ -315,6 +315,8 @@ class ForgivingDeclarationParser:
 
         self.cparser = CParser()
         self.param_names = None
+
+        self.static1_as_pointer = static1_as_pointer
 
         if rename_parameters_file is not None:
             self.param_names = load_param_names(rename_parameters_file)
@@ -638,6 +640,14 @@ class ForgivingDeclarationParser:
             self.next()
 
         code = self.read_source_code(begin, self.previous.span[1]) + ';'
+
+        if self.static1_as_pointer:
+            STATIC1 = r"[static 1]"
+            if STATIC1 in code:
+                apos = code.find(STATIC1)
+                ppos = code.rfind(" ", 0, apos)
+                code_mod = f"{code[:ppos]} *{code[ppos:]}".replace(STATIC1, "")
+                return func_name, code_mod
 
         return func_name, code
 

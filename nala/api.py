@@ -89,7 +89,8 @@ def generate_mocks(expanded_code,
                    real_variadic_functions_file,
                    cache,
                    implementation,
-                   no_implementation):
+                   no_implementation,
+                   static1_as_pointer=False):
     """Identify mocked functions and generate the source, header and
     linker files.
 
@@ -109,7 +110,8 @@ def generate_mocks(expanded_code,
 
     parser = ForgivingDeclarationParser(expanded_code,
                                         functions,
-                                        rename_parameters_file)
+                                        rename_parameters_file,
+                                        static1_as_pointer)
 
     if real_variadic_functions_file:
         real_variadic_functions = load_real_variadic_functions(

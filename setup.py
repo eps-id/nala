@@ -23,7 +23,7 @@ setup(name='nala',
           'Programming Language :: Python :: 3',
       ],
       keywords=['c', 'test', 'mock'],
-      url='https://github.com/eerimoq/nala',
+      url='https://github.com/eps-id/nala',
       packages=find_packages(exclude=['tests']),
       test_suite="tests",
       install_requires=[
