@@ -381,6 +381,8 @@ class ForgivingDeclarationParser:
         for elem in self.typedefs_code:
             if "__int128" in elem:
                 continue
+            if "__float128" in elem:
+                continue
             typedefs_code.append(elem)
         self.typedefs_code = typedefs_code
         # PATCH END
