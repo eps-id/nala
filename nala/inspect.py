@@ -171,7 +171,7 @@ RE_TOKEN = re.compile(
     '|'.join(f'(?P<{token}>{pattern})' for token, pattern in TOKENS.items()),
     flags=re.MULTILINE)
 
-STATIC_1 = re.compile(r"(\[\s*static 1\s*\])")
+STATIC_1 = re.compile(r"(\[\s*static\s+(?:const\s+)?1\s*\])")
 
 def is_static_1_pointer(code):
     match = re.search(STATIC_1, code)
